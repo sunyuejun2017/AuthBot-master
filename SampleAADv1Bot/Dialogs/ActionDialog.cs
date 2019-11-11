@@ -10,6 +10,8 @@ namespace SampleAADV1Bot.Dialogs
     using Microsoft.Bot.Builder.Dialogs;
     using Microsoft.Bot.Connector;
     using System.Configuration;
+    using SampleAADv1Bot.Dialogs;
+
     [Serializable]
     public class ActionDialog : IDialog<string>
     {
@@ -59,13 +61,19 @@ namespace SampleAADV1Bot.Dialogs
             }
             else if (message.Text == "token")
             {
-                await TokenSample(context);               
+                await TokenSample(context);
             }
             else if (message.Text == "logout")
             {
                 await context.Logout();
                 context.Wait(this.MessageReceivedAsync);
             }
+            else if (message.Text == "demo")
+            {
+                context.Call(new GraphDialog(), ResumeAfterGraphAsync);
+
+            }
+            
             else
             {
                 context.Wait(MessageReceivedAsync);
@@ -77,6 +85,16 @@ namespace SampleAADV1Bot.Dialogs
             var message = await result;
 
             await context.PostAsync(message);
+
+            
+
+            context.Wait(MessageReceivedAsync);
+        }
+
+        private async Task ResumeAfterGraphAsync(IDialogContext context, IAwaitable<string> result)
+        {
+            var x = await result;
+            await context.PostAsync($"Your enter is {x}");
             context.Wait(MessageReceivedAsync);
         }
     }
